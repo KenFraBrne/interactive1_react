@@ -1,24 +1,24 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
+import ImageCard from 'components/ImageCard';
+
+/**
+ * Main app which displays 4 images per row (images taken from interactive1's external API)
+ */
 function App() {
+
+  const imageCards = Array(20).fill(null).map( (_, ind) => {
+    return (
+      <ImageCard key={ind} image={ind}/>
+    )
+  })
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="container">
+      <div className="row row-cols-4">
+        { imageCards }
+      </div>
     </div>
   );
 }
