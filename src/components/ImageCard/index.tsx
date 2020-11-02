@@ -1,28 +1,42 @@
 import React from 'react';
-
-interface Image {
-  title: string;
-  description: string;
-  publishedOn: string;
-  authorScreenName: string;
-  thumbnailUrls: {
-    imedia_300: string;
-    imedia_1024: string;
-    imedia_2048: string;
-  }
-}
+import { Image } from 'components/ImageCard/Image'
 
 interface Props {
-  image: number;
+  image: Image;
 }
 
+/**
+ * Image card functional component for individual images
+ */
 function ImageCard(props: Props) {
 
-  const { image } = props;
+  // extract image data
+  const {
+    title,
+    description,
+    publishedOn,
+    thumbnailUrls
+  } = props.image;
 
+  // parse published date
+  const publishedDate = new Date(publishedOn);
+
+  // render
   return (
-    <div className="card">
-      Slika {props.image}
+    <div className="col mb-3">
+      <div className="card h-100">
+        <img
+          src={ thumbnailUrls.imedia_300 }
+          className="card-img-top"
+          alt="..."/>
+        <b> { title } </b>
+        <p> { description } </p>
+        <p className="card-text">
+          <small className="text-muted">
+            Datum objave: {publishedDate.toLocaleDateString()}
+          </small>
+        </p>
+      </div>
     </div>
   );
 }
