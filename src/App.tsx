@@ -4,7 +4,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import ImageCard from 'components/ImageCard';
 import { Image } from 'components/ImageCard/Image';
+import { getLocalState, addLocalState, removeLocalState } from 'util/localImageState'
 
+/* Interfaces */
 interface ApiResponse {
   data: Array<Image>;
   errors: any;
@@ -21,16 +23,24 @@ interface ImageState extends State {
   image: Image;
 }
 
+type LocalStorage = string[];
+
 /**
- * Main app which displays 4 images per row (images taken from interactive1's external API)
+ * Main app which displays 4 images per row (images fetched from interactive1's API)
  */
 function App() {
 
   /* images state */
   const [ imageStates, setImageState ] = useState<Array<ImageState>>([]);
 
-  /* fetch images on mount */
+  /* on mount */
   useEffect(() => {
+
+    /* get local states */
+    const localView: LocalStorage = getLocalState('view');
+    const localRemove: LocalStorage = getLocalState('remove');
+
+    /* fetch images */
     fetch("https://api-dev.insidetrak.interactive1.com/homepage/get-latest-images")
       .then( res => res.json() )
       .then( ( apiResponse: ApiResponse ) => {
@@ -39,8 +49,8 @@ function App() {
         const imageStates = apiResponse.data.map( image => {
           return {
             image,
-            remove: false,
-            view: false,
+            view: localView.includes(image.id),
+            remove: localRemove.includes(image.id),
           }
         })
 
@@ -63,14 +73,24 @@ function App() {
 
   /* handle view click */
   const handleViewClick = (id: string) => {
+
+    /* change state */
     const imageState = imageStates.find( imageState => imageState.image.id === id );
     const view = imageState ? !imageState.view : false;
     changeImageState(id, { view });
+
+    /* and save id locally, depending on view */
+    if (view) addLocalState('view', id)
+    else removeLocalState('view', id);
   };
 
   /* handle remove click */
   const handleRemoveClick = (id: string) => {
+    /* change state */
     changeImageState(id, { remove: true });
+
+    /* and save id locally */
+    addLocalState('remove', id);
   };
 
   /* image card array, filtered by remove state */
