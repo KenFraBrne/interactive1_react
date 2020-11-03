@@ -6,6 +6,8 @@ import ImageCard from 'components/ImageCard';
 import { Image } from 'components/ImageCard/Image';
 import { getLocalState, addLocalState, removeLocalState } from 'util/localImageState'
 
+import './App.css';
+
 /* Interfaces */
 interface ApiResponse {
   data: Array<Image>;
@@ -111,8 +113,10 @@ function App() {
 
   /* render */
   return (
-    <div className="card-columns p-3" style={{columnCount: 4}}>
-      { imageCards }
+    <div className="container-fluid">
+      <div id="cardColumns" className="card-columns p-3">
+        { imageCards }
+      </div>
     </div>
   );
 }
