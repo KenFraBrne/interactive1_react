@@ -31,3 +31,21 @@
     column-count: 1;
   }
 }
+
+/*
+ * CSS tranisition classes
+ */
+.imageCard-enter {
+  opacity: 0;
+}
+.imageCard-enter-active {
+  opacity: 1;
+  transition: opacity 300ms ease-in;
+}
+.imageCard-exit {
+  opacity: 1;
+}
+.imageCard-exit-active {
+  opacity: 0;
+  transition: opacity 300ms ease-in;
+}

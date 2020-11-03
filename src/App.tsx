@@ -1,6 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import CSSTransition from 'react-transition-group/CSSTransition';
+import TransitionGroup from 'react-transition-group/TransitionGroup';
 
 import ImageCard from 'components/ImageCard';
 import { Image } from 'components/ImageCard/Image';
@@ -12,6 +13,7 @@ import {
   resetLocalState
 } from 'util/localImageState'
 
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
 /* Interfaces */
@@ -24,7 +26,6 @@ interface ApiResponse {
 
 interface State {
   view?: boolean;
-  remove?: boolean;
 }
 
 interface ImageState extends State {
@@ -53,14 +54,16 @@ function App() {
     .then( res => res.json() )
     .then( ( apiResponse: ApiResponse ) => {
 
-      /* set images viewed & remove */
-      const imageStates = apiResponse.data.map( image => {
-        return {
-          image,
-          view: localView.includes(image.id),
-          remove: localRemove.includes(image.id),
-        }
-      })
+      /* filter if removed already and set image states */
+      const imageStates = apiResponse.data
+        .filter( image => !localRemove.includes(image.id) )
+        .map( image => {
+          return {
+            image,
+            in: false,
+            view: localView.includes(image.id),
+          }
+        })
 
       /* set image states */
       setImageStates(imageStates);
@@ -106,8 +109,8 @@ function App() {
   /* handle remove click */
   const handleRemoveClick = (id: string) => {
 
-    /* change state */
-    changeImageState(id, { remove: true });
+    /* remove element from imageStates */
+    setImageStates( imageStates.filter( imageState => imageState.image.id !== id ) );
 
     /* and save id locally */
     addLocalState('remove', id);
@@ -127,30 +130,31 @@ function App() {
   /* handle reset remove */
   const handleResetRemove = () => {
 
-    /* set all removes */
-    changeImageStates({ remove: false });
-
     /* delete locally stored view */
     resetLocalState('remove');
 
     /* reload images */
     loadImages();
-
   };
 
   /* image card array, filtered by remove state */
   const imageCards = imageStates
-    .filter( imageState => !imageState.remove )
     .map( (imageState, ind) => {
       const { image, view } = imageState;
       return (
-        <ImageCard {...{
-          key: ind,
-          image,
-          view,
-          handleViewClick,
-          handleRemoveClick,
-        }}/>
+        <CSSTransition
+          key={image.id}
+          timeout={300}
+          classNames="imageCard">
+          <li>
+            <ImageCard {...{
+              image,
+              view,
+              handleViewClick,
+              handleRemoveClick,
+            }}/>
+          </li>
+        </CSSTransition>
       )
     })
 
@@ -169,9 +173,11 @@ function App() {
           Resetiraj obrisano
         </button>
       </div>
-      <div id="cardColumns" className="card-columns p-3">
-        { imageCards }
-      </div>
+      <ul id="cardColumns" className="list-unstyled card-columns">
+        <TransitionGroup>
+          { imageCards }
+        </TransitionGroup>
+      </ul>
     </div>
   );
 }
