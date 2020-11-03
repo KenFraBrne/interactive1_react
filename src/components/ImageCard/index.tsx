@@ -1,6 +1,8 @@
 import React from 'react';
+
 import { Image } from 'components/ImageCard/Image';
 import { FiEye, FiX } from 'react-icons/fi';
+import useWidth from 'hooks/useWidth';
 
 type HandleClick = (id: string) => void;
 
@@ -42,12 +44,21 @@ function ImageCard(props: Props) {
   /* card border className */
   const cardClassName = !view ? "card" : "card border-primary";
 
+  /* width hook */
+  const width = useWidth();
+
+  /* image source change depending on window width */
+  const imgSrc = ( () => {
+    if (width < 768) return thumbnailUrls.imedia_300;
+    else return thumbnailUrls.imedia_1024;
+  })();
+
   /* render */
   return (
     <div className="col mb-3">
       <div className={ cardClassName }>
         <img
-          src={ thumbnailUrls.imedia_300 }
+          src={ imgSrc }
           className="card-img-top"/>
         <div className="card-body">
           <h5 className="card-title"> { title } </h5>
