@@ -3,6 +3,7 @@ import React from 'react';
 import { Image } from 'components/ImageCard/Image';
 import { FiEye, FiX } from 'react-icons/fi';
 import useWidth from 'hooks/useWidth';
+import './index.css';
 
 type HandleClick = (id: string) => void;
 
@@ -55,7 +56,7 @@ function ImageCard(props: Props) {
 
   /* render */
   return (
-    <div className="col mb-3">
+    <div id="cardContainer" className="col mb-3">
       <div className={ cardClassName }>
         <img
           src={ imgSrc }
