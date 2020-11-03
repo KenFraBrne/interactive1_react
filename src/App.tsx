@@ -5,6 +5,7 @@ import TransitionGroup from 'react-transition-group/TransitionGroup';
 
 import ImageCard from 'components/ImageCard';
 import { Image } from 'components/ImageCard/Image';
+import { FiEye, FiEyeOff } from 'react-icons/fi';
 
 import {
   getLocalState,
@@ -70,7 +71,7 @@ function App() {
     });
   };
 
-  /* on mount */
+  /* load images on mount */
   useEffect(() => {
     loadImages();
   }, []);
@@ -137,8 +138,27 @@ function App() {
     loadImages();
   };
 
-  /* image card array, filtered by remove state */
+  /* view filter state */
+  const [ viewFilter, setViewFilter ] = useState<number>(0);
+
+  /* view filter icon */
+  const viewFilterIcon = ( viewFilter: number ) => {
+    switch(viewFilter%3){
+      case 1: return <FiEye className="text-primary"/>
+      case 2: return <FiEyeOff className="text-dark"/>
+      default: return <FiEye className="text-dark"/>
+    }
+  };
+
+  /* image card array, filtered by viewFilter */
   const imageCards = imageStates
+    .filter( imageState => {
+      switch(viewFilter%3){
+        case 1: return imageState.view
+        case 2: return !imageState.view
+        default: return true
+      }
+    })
     .map( (imageState, ind) => {
       const { image, view } = imageState;
       return (
@@ -161,7 +181,12 @@ function App() {
   /* render */
   return (
     <div className="container-fluid">
-      <div className="container p-2 d-flex flex-wrap justify-content-center" >
+      <div className="container p-3 d-flex flex-wrap justify-content-center" >
+        <button
+          onClick={ () => setViewFilter(viewFilter+1)}
+          className="my-2 mx-3 btn btn-outline-light">
+          { viewFilterIcon(viewFilter) }
+        </button>
         <button
           onClick={() => handleResetView()}
           className="my-2 mx-3 btn btn-outline-primary">
