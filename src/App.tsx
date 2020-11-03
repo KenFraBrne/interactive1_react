@@ -193,7 +193,7 @@ function App() {
     {
       btnType: 'btn-outline-danger',
       btnText: 'Resetiraj obrisano',
-      onClick: () => setViewFilter(viewFilter+1)
+      onClick: () => handleResetRemove(),
     },
   ].map( ( btn, ind ) => {
     const { btnType, btnText, onClick } = btn;
