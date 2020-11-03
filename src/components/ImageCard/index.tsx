@@ -59,6 +59,7 @@ function ImageCard(props: Props) {
     <div id="cardContainer" className="col mb-3">
       <div className={ cardClassName }>
         <img
+          alt=''
           src={ imgSrc }
           className="card-img-top"/>
         <div className="card-body">
