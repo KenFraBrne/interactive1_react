@@ -178,25 +178,42 @@ function App() {
       )
     })
 
+  /* button array */
+  const buttonArray = [ 
+    {
+      btnType: 'btn-outline-light',
+      btnText: viewFilterIcon(viewFilter),
+      onClick: () => setViewFilter(viewFilter+1)
+    },
+    {
+      btnType: 'btn-outline-primary',
+      btnText: 'Resetiraj pogledano',
+      onClick: () => handleResetView(),
+    },
+    {
+      btnType: 'btn-outline-danger',
+      btnText: 'Resetiraj obrisano',
+      onClick: () => setViewFilter(viewFilter+1)
+    },
+  ].map( ( btn, ind ) => {
+    const { btnType, btnText, onClick } = btn;
+    return (
+      <div className="mx-auto mx-sm-0">
+        <button
+          key={ind}
+          onClick={onClick}
+          className={`my-2 mx-3 btn ${btnType}`}>
+          { btnText }
+        </button>
+      </div>
+    );
+  });
+
   /* render */
   return (
     <div className="container-fluid">
-      <div className="container p-3 d-flex flex-wrap justify-content-center" >
-        <button
-          onClick={ () => setViewFilter(viewFilter+1)}
-          className="my-2 mx-3 btn btn-outline-light">
-          { viewFilterIcon(viewFilter) }
-        </button>
-        <button
-          onClick={() => handleResetView()}
-          className="my-2 mx-3 btn btn-outline-primary">
-          Resetiraj pogledano
-        </button>
-        <button
-          onClick={() => handleResetRemove()}
-          className="my-2 mx-3 btn btn-outline-danger">
-          Resetiraj obrisano
-        </button>
+      <div className="container p-3 d-flex flex-column flex-sm-row justify-content-center" >
+        { buttonArray }
       </div>
       <ul id="cardColumns" className="list-unstyled card-columns">
         <TransitionGroup>
