@@ -20,4 +20,7 @@ const removeLocalState = (key: Key, id: Id) => {
   localStorage.setItem(key, JSON.stringify(newState))
 };
 
-export { getLocalState, addLocalState, removeLocalState }
+/* reset local storage state */
+const resetLocalState = (key: Key) => localStorage.removeItem(key);
+
+export { getLocalState, addLocalState, removeLocalState, resetLocalState }

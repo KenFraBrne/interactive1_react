@@ -4,7 +4,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import ImageCard from 'components/ImageCard';
 import { Image } from 'components/ImageCard/Image';
-import { getLocalState, addLocalState, removeLocalState } from 'util/localImageState'
+
+import {
+  getLocalState,
+  addLocalState,
+  removeLocalState,
+  resetLocalState
+} from 'util/localImageState'
 
 import './App.css';
 
@@ -33,10 +39,10 @@ type LocalStorage = string[];
 function App() {
 
   /* images state */
-  const [ imageStates, setImageState ] = useState<Array<ImageState>>([]);
+  const [ imageStates, setImageStates ] = useState<Array<ImageState>>([]);
 
-  /* on mount */
-  useEffect(() => {
+  /* load images function */
+  const loadImages = () => {
 
     /* get local states */
     const localView: LocalStorage = getLocalState('view');
@@ -44,24 +50,29 @@ function App() {
 
     /* fetch images */
     fetch("https://api-dev.insidetrak.interactive1.com/homepage/get-latest-images")
-      .then( res => res.json() )
-      .then( ( apiResponse: ApiResponse ) => {
+    .then( res => res.json() )
+    .then( ( apiResponse: ApiResponse ) => {
 
-        /* set images viewed & remove */
-        const imageStates = apiResponse.data.map( image => {
-          return {
-            image,
-            view: localView.includes(image.id),
-            remove: localRemove.includes(image.id),
-          }
-        })
+      /* set images viewed & remove */
+      const imageStates = apiResponse.data.map( image => {
+        return {
+          image,
+          view: localView.includes(image.id),
+          remove: localRemove.includes(image.id),
+        }
+      })
 
-        /* set image states */
-        setImageState(imageStates);
-      });
+      /* set image states */
+      setImageStates(imageStates);
+    });
+  };
+
+  /* on mount */
+  useEffect(() => {
+    loadImages();
   }, []);
 
-  /* change image state function */
+  /* change individual image state */
   const changeImageState = (id: string, state: State) => {
     const newImageStates = imageStates.map( imageState => {
       /* check by id and change states */
@@ -70,7 +81,13 @@ function App() {
       else return imageState
     });
     /* and set new states */
-    setImageState( newImageStates );
+    setImageStates( newImageStates );
+  };
+
+  /* change all image states */
+  const changeImageStates = (state: State) => {
+    const newImageStates = imageStates.map( imageState => ({...imageState, ...state}) );
+    setImageStates( newImageStates );
   };
 
   /* handle view click */
@@ -88,11 +105,37 @@ function App() {
 
   /* handle remove click */
   const handleRemoveClick = (id: string) => {
+
     /* change state */
     changeImageState(id, { remove: true });
 
     /* and save id locally */
     addLocalState('remove', id);
+  };
+
+  /* handle reset view */
+  const handleResetView = () => {
+
+    /* set all views */
+    changeImageStates({ view: false });
+
+    /* delete locally stored view */
+    resetLocalState('view');
+
+  };
+
+  /* handle reset remove */
+  const handleResetRemove = () => {
+
+    /* set all removes */
+    changeImageStates({ remove: false });
+
+    /* delete locally stored view */
+    resetLocalState('remove');
+
+    /* reload images */
+    loadImages();
+
   };
 
   /* image card array, filtered by remove state */
@@ -114,6 +157,18 @@ function App() {
   /* render */
   return (
     <div className="container-fluid">
+      <div className="container p-2 d-flex flex-wrap justify-content-center" >
+        <button
+          onClick={() => handleResetView()}
+          className="my-2 mx-3 btn btn-outline-primary">
+          Resetiraj pogledano
+        </button>
+        <button
+          onClick={() => handleResetRemove()}
+          className="my-2 mx-3 btn btn-outline-danger">
+          Resetiraj obrisano
+        </button>
+      </div>
       <div id="cardColumns" className="card-columns p-3">
         { imageCards }
       </div>
